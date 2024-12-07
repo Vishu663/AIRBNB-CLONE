@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios from "axios";
 import { useContext, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { UserContext } from "../UserContext";

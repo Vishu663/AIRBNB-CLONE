@@ -23,7 +23,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
   cors({
     credentials: true,
-    origin: "https://airbnb-clone-pnwc.vercel.app",
+    origin: "http://localhost:5173",
   })
 );
 
