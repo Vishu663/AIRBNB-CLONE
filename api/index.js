@@ -23,7 +23,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
   cors({
     credentials: true,
-    origin: "https://airbnb-clone-pnwc.vercel.app/",
+    origin: "https://airbnb-clone-pnwc.vercel.app",
   })
 );
 
@@ -250,6 +250,9 @@ app.get("/bookings", async (req, res) => {
   res.json(await Booking.find({ user: userData.id }).populate("place"));
 });
 
-app.listen(4000, () => {
-  console.log("Server is listening on port 4000");
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
+
+module.exports = app;
