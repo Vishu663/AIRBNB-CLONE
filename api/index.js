@@ -104,37 +104,37 @@ app.post("/logout", (req, res) => {
   res.clearCookie("token").json(true);
 });
 
-const photosMiddleware = multer({ dest: "uploads/" });
+// const photosMiddleware = multer({ dest: "uploads/" });
 
-app.post("/upload", photosMiddleware.array("photos", 100), (req, res) => {
-  const uploadedFiles = [];
-  for (let i = 0; i < req.files.length; i++) {
-    const { path, originalname } = req.files[i];
-    const parts = originalname.split(".");
-    const ext = parts[parts.length - 1];
-    const newPath = path + "." + ext;
-    fs.renameSync(path, newPath);
-    uploadedFiles.push(newPath.replace("uploads\\", ""));
-  }
-  res.json(uploadedFiles);
-});
+// app.post("/upload", photosMiddleware.array("photos", 100), (req, res) => {
+//   const uploadedFiles = [];
+//   for (let i = 0; i < req.files.length; i++) {
+//     const { path, originalname } = req.files[i];
+//     const parts = originalname.split(".");
+//     const ext = parts[parts.length - 1];
+//     const newPath = path + "." + ext;
+//     fs.renameSync(path, newPath);
+//     uploadedFiles.push(newPath.replace("uploads\\", ""));
+//   }
+//   res.json(uploadedFiles);
+// });
 
-app.post("/upload-by-link", async (req, res) => {
-  const { link } = req.body;
-  const newName = "photo" + Date.now() + ".jpg";
-  try {
-    await imageDownloader.image({
-      url: link,
-      dest: path.join(__dirname, "uploads", newName),
-    });
-    res.json(newName);
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while downloading the image." });
-  }
-});
+// app.post("/upload-by-link", async (req, res) => {
+//   const { link } = req.body;
+//   const newName = "photo" + Date.now() + ".jpg";
+//   try {
+//     await imageDownloader.image({
+//       url: link,
+//       dest: path.join(__dirname, "uploads", newName),
+//     });
+//     res.json(newName);
+//   } catch (error) {
+//     console.error(error);
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while downloading the image." });
+//   }
+// });
 
 app.post("/places", (req, res) => {
   const { token } = req.cookies;
