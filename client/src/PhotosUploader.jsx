@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { URL } from "./enviornment";
 
 export default function PhotosUploader({ addedPhotos, onChange }) {
   const [photoLink, setPhotoLink] = useState("");
@@ -34,14 +35,14 @@ export default function PhotosUploader({ addedPhotos, onChange }) {
       });
   }
 
-  function removePhoto(ev,filename) {
+  function removePhoto(ev, filename) {
     ev.preventDefault();
     onChange([...addedPhotos.filter((photo) => photo !== filename)]);
   }
 
   function selectAsMainPhoto(ev, filename) {
     ev.preventDefault();
-    onChange([filename, ...addedPhotos.filter(photo => photo !== filename)]);
+    onChange([filename, ...addedPhotos.filter((photo) => photo !== filename)]);
   }
 
   return (
@@ -66,11 +67,11 @@ export default function PhotosUploader({ addedPhotos, onChange }) {
             <div className="image-list relative" key={link}>
               <img
                 className="rounded-2xl w-full object-cover"
-                src={"http://localhost:4000/uploads/" + link}
+                src={`${URL}/uploads/` + link}
                 alt=""
               />
               <button
-                onClick={ev => removePhoto(ev,link)}
+                onClick={(ev) => removePhoto(ev, link)}
                 className=" cursor-pointer absolute bottom-1 right-1 text-white bg-black bg-opacity-50 rounded-2xl py-2 px-3"
               >
                 <svg
@@ -89,7 +90,7 @@ export default function PhotosUploader({ addedPhotos, onChange }) {
                 </svg>
               </button>
               <button
-                onClick={ev => selectAsMainPhoto(ev,link)}
+                onClick={(ev) => selectAsMainPhoto(ev, link)}
                 className=" cursor-pointer absolute bottom-1 left-1 text-white bg-black bg-opacity-50 rounded-2xl py-2 px-3"
               >
                 {link === addedPhotos[0] && (

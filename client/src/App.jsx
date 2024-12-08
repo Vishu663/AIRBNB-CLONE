@@ -12,8 +12,9 @@ import PlacesFormPage from "./pages/PlacesFormPage";
 import PlacePage from "./pages/PlacePage";
 import BookingPage from "./pages/BookingPage";
 import BookingsPage from "./pages/BookingsPage";
+import { URL } from "./enviornment";
 
-axios.defaults.baseURL = "http://localhost:4000";
+axios.defaults.baseURL = URL;
 axios.defaults.withCredentials = true;
 
 function App() {

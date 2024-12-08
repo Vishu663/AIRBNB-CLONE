@@ -64,38 +64,57 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const userDoc = await User.findOne({ email });
+
   if (userDoc) {
     const passOk = bcrypt.compareSync(password, userDoc.password);
+
     if (passOk) {
+      // Generate the JWT token
       jwt.sign(
-        {
-          email: userDoc.email,
-          id: userDoc._id,
-        },
+        { email: userDoc.email, id: userDoc._id },
         jwtSecret,
-        {},
+        { expiresIn: "1h" }, // Add expiration for security
         (err, token) => {
-          if (err) throw err;
-          res.cookie("token", token).json(userDoc);
+          if (err) {
+            console.error("Error signing token:", err);
+            res.status(500).json("Internal Server Error");
+          } else {
+            // Set the cookie with the token
+            res
+              .cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production", // Enable in production
+                sameSite: "lax", // Prevent CSRF, adjust based on your frontend/backend origin
+              })
+              .json(userDoc); // Send user data along with the response
+          }
         }
       );
     } else {
-      res.status(422).json("pass not ok");
+      res.status(422).json("Incorrect password");
     }
   } else {
-    res.json("Not Found");
+    res.status(404).json("User not found");
   }
 });
 
 app.get("/profile", (req, res) => {
+  const decoded = jwt.decode(req.cookies.token, { complete: true });
+  console.log("Decoded Token:", decoded);
+  console.log("Token:", req.cookies.token); // Debug
   const { token } = req.cookies;
   if (token) {
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-      if (err) throw err;
-      const { name, email, _id } = await User.findById(userData.id);
-      res.json({ name, email, _id });
+      if (err) {
+        console.error("JWT Verification Error:", err);
+        res.status(401).json(null);
+      } else {
+        const { name, email, _id } = await User.findById(userData.id);
+        res.json({ name, email, _id });
+      }
     });
   } else {
+    console.warn("No token provided");
     res.json(null);
   }
 });
@@ -249,6 +268,12 @@ app.get("/bookings", async (req, res) => {
   const userData = await getUserDataFromReq(req);
   res.json(await Booking.find({ user: userData.id }).populate("place"));
 });
+
+const user = await User.findById(userData.id);
+if (!user) {
+  console.warn("User not found:", userData.id);
+  res.status(404).json(null);
+}
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
