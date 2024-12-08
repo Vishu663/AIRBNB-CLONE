@@ -110,6 +110,10 @@ app.get("/profile", (req, res) => {
         res.status(401).json(null);
       } else {
         const { name, email, _id } = await User.findById(userData.id);
+        if (!name && !email && !_id) {
+          console.warn("User not found:", userData.id);
+          res.status(404).json(null);
+        }
         res.json({ name, email, _id });
       }
     });
@@ -268,12 +272,6 @@ app.get("/bookings", async (req, res) => {
   const userData = await getUserDataFromReq(req);
   res.json(await Booking.find({ user: userData.id }).populate("place"));
 });
-
-const user = await User.findById(userData.id);
-if (!user) {
-  console.warn("User not found:", userData.id);
-  res.status(404).json(null);
-}
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
